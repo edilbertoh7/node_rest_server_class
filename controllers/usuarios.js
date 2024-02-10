@@ -12,11 +12,12 @@ const usuariosGet = (req, res = response) => {
     //hago destructuracion del body para extraer el nombre y la edad
     console.log(req.body);
     
-    const { nombre, edad } = req.body
+    const { nombre, edad,id } = req.body
     res.json({
         message:'post api - controller jajaj ',
         nombre,
-        edad
+        edad,
+        id
     })
   }
 
