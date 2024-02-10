@@ -5,7 +5,7 @@ class Server {
         //inicializo express
         this.app = express()
         //inicializo el puerto
-        this.port = process.env.PORT
+        this.port = process.env.PORT || 3000
         // path de usuarios
         this.usuariosPath = '/api/usuarios';
         // middlewares
