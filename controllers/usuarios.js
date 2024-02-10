@@ -1,11 +1,25 @@
 const { response } = require('express')
 
-const usuariosGet = (req, res = response) => {
-    res.json({message:'get api - controller jajaj '})
+const usuariosGet = (req = request, res = response) => {
+  // sereciben los cquery params
+  const {q,nombre = 'sin nombre',apikey} = req.query
+    res.json({
+      message:'get api - controller jajaj ',
+    q,
+    nombre,
+    apikey
+  })
   }
 
   const usuariosPut = (req, res = response) => {
-    res.json({message:'put api - controller jajaj '})
+
+    const  {id} = req.params
+
+
+    res.json({
+      message:'put api - controller jajaj ',
+    id
+  })
   }
 
   const usuariosPost = (req, res = response) => {
