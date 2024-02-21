@@ -1,4 +1,4 @@
-const {Schema, model} = require('mongoose');
+const { Schema, model } = require('mongoose');
 
 //defino el modelo de usuario
 const UsuarioSchema = Schema({
@@ -32,6 +32,16 @@ const UsuarioSchema = Schema({
         default: false
     }
 })
+
+// aca si se desea se pueden modificar los metodos existentes de mongoose o crear nuevos
+
+/* quito la version y la contraseña para no enviarla en la respuesta al cliente 
+y con el operador rest ...nombrevariable unifico el resto de los campos que quiero conserver*/
+UsuarioSchema.methods.toJSON = function () {
+    const { __v, password, ...usuario } = this.toObject();
+
+    return usuario;
+}
 
 //exporto el modelo y defino el nombre con el que se guardara en la base de datos
 module.exports = model('Usuarios', UsuarioSchema)

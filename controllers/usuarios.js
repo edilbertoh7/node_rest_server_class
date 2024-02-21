@@ -15,20 +15,17 @@ const usuariosGet = (req = request, res = response) => {
 }
 
 const usuariosPost = async (req, res = response) => {
- 
-  //hago destructuracion del body para extraer el nombre y la edad
-  // console.log(req.body);
 
   const { nombre, correo, password, rol } = req.body
-
   const usuario = new Usuario({ nombre, correo, password, rol });
+
   // verificar si el correo existe
-  const existeEmail = await Usuario.findOne({ correo });
-  if (existeEmail) {
-    return res.status(400).json({
-      msg: 'El correo ya existe'
-    })
-  }
+  // const existeEmail = await Usuario.findOne({ correo });
+  // if (existeEmail) {
+  //   return res.status(400).json({
+  //     msg: 'El correo ya existe'
+  //   })
+  // }
 
   //encriptar la contraseña
   const salt = bcryptjs.genSaltSync();
