@@ -1,7 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 const { dbConnection } = require('../database/config');
-const  connectionmysql  = require('../database/mysqlconfig');
+// const  connectionmysql  = require('../database/mysqlconfig');
 class Server {
     constructor() {
         //inicializo express
