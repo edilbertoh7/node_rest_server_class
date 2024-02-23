@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 const { validarCampos } = require('../middlewares/validar-campos');
-const { esRoleValido, emailExiste } = require('../helpers/db-validators');
+const { esRoleValido, emailExiste, existeUsuarioPorId } = require('../helpers/db-validators');
 const { usuariosGet, usuariosPut, usuariosPost, usuariosDelete } = require('../controllers/usuarios');
 const router = Router();
 
@@ -15,16 +15,18 @@ router.post('/', [
   check('correo', 'El correo es requerido').not().isEmpty(),
   check('correo', 'El correo no tiene un formato valido').isEmail(),
   check('correo').custom(emailExiste ),
-
-
-  // check('rol', 'El rol no es valido').isIn(['ADMIN_ROLE', 'USER_ROLE']),
   //verifico que el rol exista en DB
   check('rol').custom(esRoleValido),
   //invoco el middleware personalizado para verificar todos los errores
   validarCampos
 ], usuariosPost);
 
-router.put('/:id', usuariosPut);
+router.put('/:id',[
+  check('id', 'No es un ID valido').isMongoId(),
+  check('id').custom(existeUsuarioPorId),
+  // check('rol').custom(esRoleValido),
+  validarCampos
+], usuariosPut);
 
 router.delete('/', usuariosDelete);
 //si la ruta no existe se muestra el mensaje de eror

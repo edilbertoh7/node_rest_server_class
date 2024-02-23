@@ -19,14 +19,6 @@ const usuariosPost = async (req, res = response) => {
   const { nombre, correo, password, rol } = req.body
   const usuario = new Usuario({ nombre, correo, password, rol });
 
-  // verificar si el correo existe
-  // const existeEmail = await Usuario.findOne({ correo });
-  // if (existeEmail) {
-  //   return res.status(400).json({
-  //     msg: 'El correo ya existe'
-  //   })
-  // }
-
   //encriptar la contraseña
   const salt = bcryptjs.genSaltSync();
   usuario.password = bcryptjs.hashSync(password, salt);
@@ -38,14 +30,25 @@ const usuariosPost = async (req, res = response) => {
   })
 }
 
-const usuariosPut = (req, res = response) => {
+const usuariosPut = async (req, res = response) => {
 
-  const { id } = req.params
+  const { id } = req.params;
+  const { password, google, ...resto } = req.body;
 
+  //TODO validar contra base de datos
+  if (password) {
+    //encripto la contraseña y la paso al resto de los campos
+    const salt = bcryptjs.genSaltSync();
+    resto.password = bcryptjs.hashSync(password, salt);
+  }
+
+  // hago la actualizacion del usuario por su id
+  const usuario1 = await Usuario.findByIdAndUpdate(id, resto);
+  const existeusuario = await Usuario.findById(id);
 
   res.json({
     message: 'put api - controller jajaj ',
-    id
+    existeusuario
   })
 }
 

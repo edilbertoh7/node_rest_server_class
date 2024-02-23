@@ -8,23 +8,24 @@ const esRoleValido = async(rol ='')=>{
     }
   }
 
-//   const existeEmail = await Usuario.findOne({ correo });
-//   if (existeEmail) {
-//     return res.status(400).json({
-//       msg: 'El correo ya existe'
-//     })
-//   }
+
 
   const emailExiste = async(correo ='')=>{
     const existeEmail = await Usuario .findOne({ correo });
     if (existeEmail) {
         throw new Error(`El correo ${correo} ya esta registrado`)
-        
     }
+  }
 
+  const existeUsuarioPorId = async(id)=>{
+    const existeusuario = await Usuario .findById(id);
+    if (!existeusuario) {
+        throw new Error(`No existe un usuario con el id ${id} `);
+    }
   }
 
   module.exports = {
     esRoleValido,
-    emailExiste
+    emailExiste,
+    existeUsuarioPorId
   }
