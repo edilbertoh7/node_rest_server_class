@@ -3,14 +3,32 @@ const bcryptjs = require('bcryptjs');
 const Usuario = require('../models/usuario');
 const { validationResult } = require('express-validator');
 
-const usuariosGet = (req = request, res = response) => {
+const usuariosGet = async(req = request, res = response) => {
   // sereciben los cquery params
-  const { q, nombre = 'sin nombre', apikey } = req.query
+  // const { q, nombre = 'sin nombre', apikey } = req.query
+  const { limite = 5 , desde} = req.query
+ 
+  const query = { estado: true };
+  // const usuarios = await Usuario.find(query)
+  //   .skip(Number(desde))
+  //   .limit(Number(limite));
+
+  //   const total = await Usuario.countDocuments(query);
+    /* para optimizar la respuesta ejecuto las dos 
+    consultas en una promesa para que se ejecuten simultaneamente*/
+
+    const [total, usuarios ]=await Promise.all([
+      Usuario.countDocuments(query),
+      Usuario.find(query)
+    .skip(Number(desde))
+    .limit(Number(limite))
+      
+    ])
+
+
   res.json({
-    message: 'get api - controller jajaj ',
-    q,
-    nombre,
-    apikey
+    total,
+    usuarios
   })
 }
 
@@ -46,10 +64,7 @@ const usuariosPut = async (req, res = response) => {
   const usuario1 = await Usuario.findByIdAndUpdate(id, resto);
   const existeusuario = await Usuario.findById(id);
 
-  res.json({
-    message: 'put api - controller jajaj ',
-    existeusuario
-  })
+  res.json( existeusuario )
 }
 
 const usuariosDelete = (req, res = response) => {
