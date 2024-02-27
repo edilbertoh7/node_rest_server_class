@@ -14,21 +14,25 @@ router.post('/', [
   //verifico que el correo sea valido
   check('correo', 'El correo es requerido').not().isEmpty(),
   check('correo', 'El correo no tiene un formato valido').isEmail(),
-  check('correo').custom(emailExiste ),
+  check('correo').custom(emailExiste),
   //verifico que el rol exista en DB
   check('rol').custom(esRoleValido),
   //invoco el middleware personalizado para verificar todos los errores
   validarCampos
 ], usuariosPost);
 
-router.put('/:id',[
+router.put('/:id', [
   check('id', 'No es un ID valido').isMongoId(),
   check('id').custom(existeUsuarioPorId),
   // check('rol').custom(esRoleValido),
   validarCampos
 ], usuariosPut);
 
-router.delete('/', usuariosDelete);
+router.delete('/:id', [
+  check('id', 'No es un ID valido').isMongoId(),
+  check('id').custom(existeUsuarioPorId),
+  validarCampos
+], usuariosDelete);
 //si la ruta no existe se muestra el mensaje de eror
 router.put('*', (req, res) => {
   res.json({ message: 'la ruta no existe' })

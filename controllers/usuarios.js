@@ -40,7 +40,7 @@ const usuariosPost = async (req, res = response) => {
   //encriptar la contraseña
   const salt = bcryptjs.genSaltSync();
   usuario.password = bcryptjs.hashSync(password, salt);
-  console.log('usuario', usuario);
+  // console.log('usuario', usuario);
   //guardar en base de datos
   await usuario.save();
   res.json({
@@ -67,8 +67,15 @@ const usuariosPut = async (req, res = response) => {
   res.json( existeusuario )
 }
 
-const usuariosDelete = (req, res = response) => {
-  res.json({ message: 'delete api - controller jajaj ' })
+const usuariosDelete = async(req, res = response) => {
+  const {id} = req.params;
+  /* borrar al usuario fisicamente este modo no es
+   recomendado ya que se podria perder la integridad referencial*/
+  // const usuario = await Usuario.findByIdAndDelete(id);
+
+  const usuario = await Usuario.findByIdAndUpdate(id, {estado: false});
+  const existeusuario = await Usuario.findById(id);
+  res.json(existeusuario)
 }
 
 
