@@ -53,7 +53,7 @@ class Server {
     //metodo que muestra el puerto donde esta corriendo el servidor
     listen() {
         this.app.listen(this.port, () => {
-            console.log('servidor corriendo en el puertos ' + 'http://localhost:' + this.port);
+            console.log('servidor corriendo en el puerto ' + 'http://localhost:' + this.port);
         });
     }
 
