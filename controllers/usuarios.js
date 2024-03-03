@@ -1,48 +1,87 @@
-const { response } = require('express')
+const { response } = require('express');
+const bcryptjs = require('bcryptjs');
+const Usuario = require('../models/usuario');
+const { validationResult } = require('express-validator');
 
-const usuariosGet = (req = request, res = response) => {
+const usuariosGet = async(req = request, res = response) => {
   // sereciben los cquery params
-  const {q,nombre = 'sin nombre',apikey} = req.query
-    res.json({
-      message:'get api - controller jajaj ',
-    q,
-    nombre,
-    apikey
+  // const { q, nombre = 'sin nombre', apikey } = req.query
+  const { limite = 5 , desde} = req.query
+ 
+  const query = { estado: true };
+  // const usuarios = await Usuario.find(query)
+  //   .skip(Number(desde))
+  //   .limit(Number(limite));
+
+  //   const total = await Usuario.countDocuments(query);
+    /* para optimizar la respuesta ejecuto las dos 
+    consultas en una promesa para que se ejecuten simultaneamente*/
+
+    const [total, usuarios ]=await Promise.all([
+      Usuario.countDocuments(query),
+      Usuario.find(query)
+    .skip(Number(desde))
+    .limit(Number(limite))
+      
+    ])
+
+
+  res.json({
+    total,
+    usuarios
   })
-  }
+}
 
-  const usuariosPut = (req, res = response) => {
+const usuariosPost = async (req, res = response) => {
 
-    const  {id} = req.params
+  const { nombre, correo, password, rol } = req.body
+  const usuario = new Usuario({ nombre, correo, password, rol });
 
-
-    res.json({
-      message:'put api - controller jajaj ',
-    id
+  //encriptar la contraseña
+  const salt = bcryptjs.genSaltSync();
+  usuario.password = bcryptjs.hashSync(password, salt);
+  // console.log('usuario', usuario);
+  //guardar en base de datos
+  await usuario.save();
+  res.json({
+    usuario
   })
+}
+
+const usuariosPut = async (req, res = response) => {
+
+  const { id } = req.params;
+  const { password, google, ...resto } = req.body;
+
+  //TODO validar contra base de datos
+  if (password) {
+    //encripto la contraseña y la paso al resto de los campos
+    const salt = bcryptjs.genSaltSync();
+    resto.password = bcryptjs.hashSync(password, salt);
   }
 
-  const usuariosPost = (req, res = response) => {
-    //hago destructuracion del body para extraer el nombre y la edad
-    console.log(req.body);
-    
-    const { nombre, edad,id } = req.body
-    res.json({
-        message:'post api - controller jajaj ',
-        nombre,
-        edad,
-        id
-    })
-  }
+  // hago la actualizacion del usuario por su id
+  const usuario1 = await Usuario.findByIdAndUpdate(id, resto);
+  const existeusuario = await Usuario.findById(id);
 
-  const usuariosDelete = (req, res = response) => {
-    res.json({message:'delete api - controller jajaj '})
-  }
+  res.json( existeusuario )
+}
+
+const usuariosDelete = async(req, res = response) => {
+  const {id} = req.params;
+  /* borrar al usuario fisicamente este modo no es
+   recomendado ya que se podria perder la integridad referencial*/
+  // const usuario = await Usuario.findByIdAndDelete(id);
+
+  const usuario = await Usuario.findByIdAndUpdate(id, {estado: false});
+  const existeusuario = await Usuario.findById(id);
+  res.json(existeusuario)
+}
 
 
-  module.exports = {
-    usuariosGet,
-    usuariosPut,
-    usuariosPost,
-    usuariosDelete
-  }
+module.exports = {
+  usuariosGet,
+  usuariosPut,
+  usuariosPost,
+  usuariosDelete
+}

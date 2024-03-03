@@ -1,5 +1,7 @@
 const express = require('express')
-const cors = require('cors')
+const cors = require('cors');
+const { dbConnection } = require('../database/config');
+// const  connectionmysql  = require('../database/mysqlconfig');
 class Server {
     constructor() {
         //inicializo express
@@ -8,14 +10,31 @@ class Server {
         this.port = process.env.PORT
         // path de usuarios
         this.usuariosPath = '/api/usuarios';
+
+        // conectar a ala base de datos mongo smongo
+        this.conectarDB();
+
+        //conectar base de datos mysql
+        // this.conectarDBmysql();
+
         // middlewares
         this.middlewares();
         //rutas de la aplicacion
         this.routes();
     }
 
+    //conexion mongobd
+    async conectarDB() {
+        await dbConnection();
+    }
+
+    //conexion mysql
+    // async conectarDBmysql() {
+    //     connectionmysql
+    // }
+
     middlewares() {
-      // cors
+        // cors
         this.app.use(cors());
 
         // lectura y parseo del body
@@ -26,15 +45,15 @@ class Server {
 
     //creo el metodo routes para poner todas las rutas
     routes() {
-       this.app.use(this.usuariosPath, require('../routes/usuarios'))
-      //  this.app.use('/api/usuarios2', require('../routes/usuarios'))
+        this.app.use(this.usuariosPath, require('../routes/usuarios'))
+        //  this.app.use('/api/usuarios2', require('../routes/usuarios'))
 
     }
 
     //metodo que muestra el puerto donde esta corriendo el servidor
     listen() {
         this.app.listen(this.port, () => {
-            console.log('servidor corriendo en el puertos ' + 'http://localhost:'+this.port);
+            console.log('servidor corriendo en el puerto ' + 'http://localhost:' + this.port);
         });
     }
 
